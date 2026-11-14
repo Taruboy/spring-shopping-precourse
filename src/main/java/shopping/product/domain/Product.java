@@ -1,10 +1,22 @@
 package shopping.product.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Product {
-    private final Long id;
-    private final String name;
-    private final int price;
-    private final String imageUrl;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private int price;
+    private String imageUrl;
+
+    protected Product() {
+
+    }
 
     public Product(Long id, String name, int price, String imageUrl) {
         this.id = id;
@@ -27,9 +39,5 @@ public class Product {
 
     public int getPrice() {
         return price;
-    }
-
-    public Product withId(Long id) {
-        return new Product(id, this.name, this.price, this.imageUrl);
     }
 }

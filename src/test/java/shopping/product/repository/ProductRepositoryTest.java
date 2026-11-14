@@ -5,25 +5,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import shopping.product.domain.Product;
 
+@DataJpaTest
 class ProductRepositoryTest {
     private static final String IMAGE_URL = "https://image.com/product.png";
 
+    @Autowired
+    private ProductRepository repository;
+
     @Test
     void 저장한_상품이_없으면_목록이_비어있다() {
-        // 준비
-        ProductRepository repository = new ProductRepository();
-        // 실행
         List<Product> products = repository.findAll();
 
-        // 확인
         assertThat(products).isEmpty();
     }
 
     @Test
     void 저장하면_id가_붙은_상품이_돌아온다() {
-        ProductRepository repository = new ProductRepository();
         Product product = createProduct("컵", 3000);
 
         Product saved = repository.save(product);
@@ -33,7 +34,6 @@ class ProductRepositoryTest {
 
     @Test
     void 저장한_상품을_id로_찾으면_저장할_때의_이름가격이미지URL이_그대로_나온다() {
-        ProductRepository repository = new ProductRepository();
         Product product = createProduct("컵", 3000);
 
         Product saved = repository.save(product);
@@ -49,7 +49,6 @@ class ProductRepositoryTest {
 
     @Test
     void 저장소에_없는_id로_찾으면_빈_결과가_나온다() {
-        ProductRepository repository = new ProductRepository();
         repository.save(createProduct("컵", 3000));
 
         Optional<Product> findResult = repository.findById(999L);
@@ -58,8 +57,6 @@ class ProductRepositoryTest {
 
     @Test
     void 상품_두_개를_저장하면_서로_다른_id가_붙는다() {
-        ProductRepository repository = new ProductRepository();
-
         Product firstProduct = repository.save(createProduct("컵", 3000));
         Product secondProduct = repository.save(createProduct("자동차", 10000));
 
@@ -68,8 +65,6 @@ class ProductRepositoryTest {
 
     @Test
     void 상품_두_개를_저장하면_목록에_둘_다_나온다() {
-        ProductRepository repository = new ProductRepository();
-
         Product firstProduct = repository.save(createProduct("컵", 3000));
         Product secondProduct = repository.save(createProduct("자동차", 10000));
 
@@ -81,8 +76,6 @@ class ProductRepositoryTest {
 
     @Test
     void 같은_id로_다시_저장하면_덮어쓴다() {
-        ProductRepository repository = new ProductRepository();
-
         Product savedProduct = repository.save(createProduct("컵", 3000));
         Product updatedProduct = new Product(savedProduct.getId(), "자동차", 10000, IMAGE_URL);
         repository.save(updatedProduct);
@@ -98,8 +91,6 @@ class ProductRepositoryTest {
 
     @Test
     void 삭제하면_그_id로_더_이상_찾을_수_없다() {
-        ProductRepository repository = new ProductRepository();
-
         Product firstProduct = repository.save(createProduct("컵", 3000));
         Product secondProduct = repository.save(createProduct("자동차", 10000));
 

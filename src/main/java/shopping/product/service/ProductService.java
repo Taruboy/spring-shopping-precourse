@@ -3,18 +3,24 @@ package shopping.product.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import shopping.product.domain.Product;
+import shopping.product.domain.ProductNameValidator;
 import shopping.product.exception.ProductNotFoundException;
 import shopping.product.repository.ProductRepository;
 
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ProductNameValidator productNameValidator;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(
+            ProductRepository productRepository,
+            ProductNameValidator productNameValidator) {
         this.productRepository = productRepository;
+        this.productNameValidator = productNameValidator;
     }
 
     public Product create(String name, int price, String imageUrl) {
+        productNameValidator.validate(name);
         Product product = new Product(null, name, price, imageUrl);
         return productRepository.save(product);
     }
@@ -29,6 +35,7 @@ public class ProductService {
     }
 
     public Product update(Long id, String name, int price, String imageUrl) {
+        productNameValidator.validate(name);
         findById(id);
         Product product = new Product(id, name, price, imageUrl);
         return productRepository.save(product);

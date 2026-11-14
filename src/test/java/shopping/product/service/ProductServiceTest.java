@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import shopping.product.domain.Product;
+import shopping.product.domain.ProductNameValidator;
+import shopping.product.exception.InvalidProductNameException;
 import shopping.product.exception.ProductNotFoundException;
 
 @DataJpaTest
-@Import(ProductService.class)
+@Import({ProductService.class, ProductNameValidator.class})
 class ProductServiceTest {
     private static final String IMAGE_URL = "https://image.com/product.png";
 
@@ -91,5 +93,21 @@ class ProductServiceTest {
     void 없는_id를_삭제하면_예외가_난다() {
         assertThatThrownBy(() -> service.delete(999L))
                 .isInstanceOf(ProductNotFoundException.class);
+    }
+
+    @Test
+    void 규칙_어긋난_이름은_예외및저장_안된다() {
+        assertThatThrownBy(() -> service.create("a".repeat(16), 3000, IMAGE_URL))
+                .isInstanceOf(InvalidProductNameException.class);
+        assertThat(service.findAll()).hasSize(0);
+    }
+
+    @Test
+    void 규칙_어긋난_이름수정하면_예외_기존상품_그대로() {
+        Product product = service.create("컵", 3000, IMAGE_URL);
+
+        assertThatThrownBy(() -> service.update(product.getId(), "a".repeat(16), 3000, IMAGE_URL))
+                .isInstanceOf(InvalidProductNameException.class);
+        assertThat(service.findById(product.getId()).getName()).isEqualTo("컵");
     }
 }

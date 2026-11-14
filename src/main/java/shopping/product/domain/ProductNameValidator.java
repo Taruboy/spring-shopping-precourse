@@ -1,8 +1,10 @@
 package shopping.product.domain;
 
 import java.util.regex.Pattern;
+import org.springframework.stereotype.Component;
 import shopping.product.exception.InvalidProductNameException;
 
+@Component
 public class ProductNameValidator {
     private static final int MAX_LENGTH = 15;
     private static final Pattern ALLOWED_PATTERN =

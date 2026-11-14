@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import shopping.product.domain.Product;
 import shopping.product.exception.InvalidProductNameException;
 import shopping.product.exception.ProductNotFoundException;
+import shopping.product.exception.ProfanityCheckUnavailableException;
 import shopping.product.service.ProductService;
 
 @WebMvcTest(ProductController.class)
@@ -93,6 +94,16 @@ class ProductControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(productService).delete(1L);
+    }
+
+    @Test
+    void 비속어_검사를_할_수_없으면_503과_메시지를_돌려준다() throws Exception {
+        given(productService.create(anyString(), anyInt(), anyString()))
+                .willThrow(new ProfanityCheckUnavailableException("비속어 검사 서비스를 사용할 수 없습니다."));
+
+        postProduct(VALID_BODY)
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.message").value("비속어 검사 서비스를 사용할 수 없습니다."));
     }
 
     private ResultActions postProduct(String body) throws Exception {

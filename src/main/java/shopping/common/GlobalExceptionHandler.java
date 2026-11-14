@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shopping.product.exception.InvalidProductNameException;
 import shopping.product.exception.ProductNotFoundException;
+import shopping.product.exception.ProfanityCheckUnavailableException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,5 +28,11 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleInvalidRequest(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
         return new ErrorResponse(message);
+    }
+
+    @ExceptionHandler(ProfanityCheckUnavailableException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorResponse handleProfanityCheckUnavailable(ProfanityCheckUnavailableException e) {
+        return new ErrorResponse(e.getMessage());
     }
 }

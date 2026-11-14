@@ -7,9 +7,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import shopping.product.domain.Product;
 import shopping.product.domain.ProductNameValidator;
+import shopping.product.domain.ProfanityChecker;
 import shopping.product.exception.InvalidProductNameException;
 import shopping.product.exception.ProductNotFoundException;
 
@@ -96,18 +99,41 @@ class ProductServiceTest {
     }
 
     @Test
-    void 규칙_어긋난_이름은_예외및저장_안된다() {
+    void 규칙에_어긋난_이름으로_등록하면_예외가_나고_저장되지_않는다() {
         assertThatThrownBy(() -> service.create("a".repeat(16), 3000, IMAGE_URL))
                 .isInstanceOf(InvalidProductNameException.class);
         assertThat(service.findAll()).hasSize(0);
     }
 
     @Test
-    void 규칙_어긋난_이름수정하면_예외_기존상품_그대로() {
+    void 규칙에_어긋난_이름으로_수정하면_예외가_나고_기존_상품은_그대로다() {
         Product product = service.create("컵", 3000, IMAGE_URL);
 
         assertThatThrownBy(() -> service.update(product.getId(), "a".repeat(16), 3000, IMAGE_URL))
                 .isInstanceOf(InvalidProductNameException.class);
         assertThat(service.findById(product.getId()).getName()).isEqualTo("컵");
+    }
+
+    @Test
+    void 비속어가_든_이름으로_등록하면_예외가_나고_저장되지_않는다() {
+        assertThatThrownBy(() -> service.create("비속어컵", 3000, IMAGE_URL))
+                .isInstanceOf(InvalidProductNameException.class);
+        assertThat(service.findAll()).hasSize(0);
+    }
+
+    @Test
+    void 비속어가_든_이름으로_수정하면_예외가_나고_기존_상품은_그대로다() {
+        Product product = service.create("컵", 3000, IMAGE_URL);
+        assertThatThrownBy(() -> service.update(product.getId(), "비속어컵", 3000, IMAGE_URL))
+                .isInstanceOf(InvalidProductNameException.class);
+        assertThat(service.findById(product.getId()).getName()).isEqualTo("컵");
+    }
+
+    @TestConfiguration
+    static class FakeProfanityConfig {
+        @Bean
+        ProfanityChecker profanityChecker() {
+            return text -> text.contains("비속어");
+        }
     }
 }

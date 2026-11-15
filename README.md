@@ -69,8 +69,8 @@ shopping
 
 ### 활용 방법
 - 프로젝트 구조(Controller → Service → Repository)와 구현 순서를 AI와 함께 잡았다.
-- 코드를 바로 받지 않고, 처음에는 테스트 의사코드를 보고 직접 작성한 뒤 AI에게 검토를 받았다.
-- 이해되지 않는 부분(JPA, MockRestServiceServer, @WebMvcTest 등)은 질문해서 설명을 들었다.
+- 테스트 코드를 작성할 때, 바로 받지 않고 의사코드를 보고 직접 작성한 뒤 AI에게 검토를 받았다.
+- 이해되지 않는 부분(JPA, Jwt 토큰, record, @WebMvcTest 를 비롯한 @ 문법들 등)은 질문해서 예시와 함께 설명을 들었다.
 
 ### 직접 판단하고 바꾼 점
 - 테스트 → 구현 → 커밋 방향으로 개발하려 했으나, 시간이 오래걸려서 구현 → 테스트 → 커밋 방향으로 바꾸었다.
@@ -80,6 +80,10 @@ shopping
 
 ### 배운 점
 - Controller, Service, Repository 각각이 어떤 역할을 하는지 알았다.
-- 통과하는 테스트와 의미 있는 테스트는 다르다는 것을 배웠다.
-- 계층을 나누면 계층마다 테스트 방법이 달라진다 (@DataJpaTest, MockRestServiceServer, @WebMvcTest).
+- 각각의 폴더 (domain, common, auth, exception 등) 에 어떠한 역할을 하는 파일이 들어가야하는지 알았다.
+- JPA 에서 제공하는 여러 골뱅이 키워드의 쓰임새를 알게 되었다.(@Component, @Service, @Controller, @Bean, @Configuration 등)
 - 외부 API는 실패할 수 있으므로 실패했을 때의 정책을 정해야 한다.
+- Jwt 토큰의 개념을 직접 코드를 짜보면서 습득할 수 있었다.
+- 통과하는 테스트와 의미 있는 테스트는 다르다는 것을 배웠다.
+- 테스트 코드를 작성하면서 모든 경우의 수를 고려해보는 것이 실무에서 중요하다는 것을 배웠다.
+- Postman 프로그램 사용법을 배우게 되었다.

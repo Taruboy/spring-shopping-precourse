@@ -5,6 +5,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import shopping.member.exception.DuplicateEmailException;
+import shopping.member.exception.InvalidCredentialsException;
 import shopping.product.exception.InvalidProductNameException;
 import shopping.product.exception.ProductNotFoundException;
 import shopping.product.exception.ProfanityCheckUnavailableException;
@@ -33,6 +35,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProfanityCheckUnavailableException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorResponse handleProfanityCheckUnavailable(ProfanityCheckUnavailableException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateEmailException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDuplicateEmail(DuplicateEmailException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleInvalidCredentials(InvalidCredentialsException e) {
         return new ErrorResponse(e.getMessage());
     }
 }

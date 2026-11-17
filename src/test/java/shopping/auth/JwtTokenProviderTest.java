@@ -40,7 +40,7 @@ class JwtTokenProviderTest {
     @Test
     void 서명이_변조된_토큰은_거부한다() {
         String token = provider.create(7L);
-        String tampered = token.substring(0, token.lastIndexOf('.') + 1) + "invalidsignature";;
+        String tampered = token.substring(0, token.lastIndexOf('.') + 1) + "invalidsignature";
 
         assertThatThrownBy(() -> provider.extractMemberId(tampered))
                 .isInstanceOf(JwtException.class);

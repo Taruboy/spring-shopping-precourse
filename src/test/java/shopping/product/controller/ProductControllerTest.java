@@ -3,7 +3,6 @@ package shopping.product.controller;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -21,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shopping.auth.JwtTokenProvider;
 import shopping.product.domain.Product;
 import shopping.product.exception.InvalidProductNameException;
 import shopping.product.exception.ProductNotFoundException;
@@ -38,6 +38,8 @@ class ProductControllerTest {
 
     @MockitoBean
     private ProductService productService;
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     void 상품을_등록하면_201과_등록된_상품을_돌려준다() throws Exception {
@@ -66,7 +68,8 @@ class ProductControllerTest {
         given(productService.findById(999L))
                 .willThrow(new ProductNotFoundException("상품을 찾을 수 없습니다."));
         mockMvc.perform(get("/api/products/999"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("상품을 찾을 수 없습니다."));
     }
 
     @Test
@@ -104,6 +107,16 @@ class ProductControllerTest {
         postProduct(VALID_BODY)
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.message").value("비속어 검사 서비스를 사용할 수 없습니다."));
+    }
+
+    @Test
+    void 이름_규칙에_어긋나면_400과_메시지를_돌려준다() throws Exception {
+        given(productService.create(anyString(), anyInt(), anyString()))
+                .willThrow(new InvalidProductNameException("상품 이름은 15자 이하여야 합니다."));
+
+        postProduct(VALID_BODY)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("상품 이름은 15자 이하여야 합니다."));
     }
 
     private ResultActions postProduct(String body) throws Exception {

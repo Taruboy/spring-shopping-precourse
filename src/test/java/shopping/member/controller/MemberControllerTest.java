@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import shopping.auth.JwtTokenProvider;
 import shopping.member.domain.Member;
 import shopping.member.exception.DuplicateEmailException;
 import shopping.member.exception.InvalidCredentialsException;
@@ -28,6 +29,8 @@ class MemberControllerTest {
 
     @MockitoBean
     private MemberService memberService;
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     void 가입하면_201과_회원정보를_돌려주고_비밀번호는_없다() throws Exception {

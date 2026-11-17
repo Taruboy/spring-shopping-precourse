@@ -11,6 +11,9 @@ import shopping.member.exception.InvalidCredentialsException;
 import shopping.product.exception.InvalidProductNameException;
 import shopping.product.exception.ProductNotFoundException;
 import shopping.product.exception.ProfanityCheckUnavailableException;
+import shopping.wish.exception.DuplicateWishException;
+import shopping.wish.exception.WishAccessDeniedException;
+import shopping.wish.exception.WishNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -54,6 +57,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUnauthorized(UnauthorizedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(WishNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleWishNotFound(WishNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(WishAccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleWishAccessDenied(WishAccessDeniedException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateWishException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDuplicateWish(DuplicateWishException e) {
         return new ErrorResponse(e.getMessage());
     }
 }
